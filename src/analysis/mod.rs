@@ -109,10 +109,21 @@ pub(crate) fn common<M: Measurement, T>(
     let data = Data::new(&iters, &times);
     let labeled_sample = outliers(id, &criterion.output_directory, avg_times);
 
-    let good_samples = labeled_sample.drain_outlier();
-    let avg_times = Sample::new(&good_samples);
-    let labeled_sample = outliers(id, &criterion.output_directory, avg_times);
-    
+    let mut good_samples = labeled_sample.drain_outlier();
+    let mut avg_times = Sample::new(&good_samples);
+    let mut labeled_sample = outliers(id, &criterion.output_directory, avg_times);
+
+    loop {
+        let (los, lom, noa, him, his) = labeled_sample.count();
+        if los + lom + him + his == 0 || noa < config.sample_size / 2 {
+            break
+        } else {
+            good_samples = labeled_sample.drain_outlier();
+            avg_times = Sample::new(&good_samples);
+            labeled_sample = outliers(id, &criterion.output_directory, avg_times);
+        }
+    }
+
     let (distribution, slope) = regression(&data, config);
     let (mut distributions, mut estimates) = estimates(avg_times, config);
 
