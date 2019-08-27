@@ -68,6 +68,12 @@ impl<'a, A> LabeledSample<'a, A>
 where
     A: Float,
 {
+    pub fn drain_outlier(&self) ->Vec<A> {
+        self.iter().filter_map(|(item, label)| match label {
+            NotAnOutlier => Some(item),
+            _ => None
+        }).collect()
+    }
     /// Returns the number of data points per label
     ///
     /// - Time: `O(length)`
