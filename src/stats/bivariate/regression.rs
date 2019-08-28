@@ -28,7 +28,7 @@ where
             (sign as f64) * (mantissa as f64) * (2f64.powf(exponent as f64))
         }).collect();;
 
-        let k = Langbardo::fit(&xs[..], &ys[..], 0.9);
+        let k = Langbardo::fit(&xs[..], &ys[..], 0.1);
 
         Slope(A::from(k.unwrap().0).unwrap())
     }
