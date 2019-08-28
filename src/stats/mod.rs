@@ -93,14 +93,14 @@ pub enum Tails {
     Two,
 }
 
-fn dot<A>(xs: &[A], ys: &[A]) -> A
-where
-    A: Float,
-{
-    xs.iter()
-        .zip(ys)
-        .fold(A::cast(0), |acc, (&x, &y)| acc + x * y)
-}
+//fn dot<A>(xs: &[A], ys: &[A]) -> A
+//where
+//    A: Float,
+//{
+//    xs.iter()
+//        .zip(ys)
+//        .fold(A::cast(0), |acc, (&x, &y)| acc + x * y)
+//}
 
 fn sum<A>(xs: &[A]) -> A
 where

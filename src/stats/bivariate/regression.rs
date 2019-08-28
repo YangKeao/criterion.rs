@@ -2,6 +2,7 @@
 
 use crate::stats::bivariate::Data;
 use crate::stats::float::Float;
+use langbardo::Langbardo;
 
 /// A straight line that passes through the origin `y = m * x`
 #[derive(Clone, Copy)]
@@ -18,13 +19,18 @@ where
     ///
     /// - Time: `O(length)`
     pub fn fit(data: &Data<A, A>) -> Slope<A> {
-        let xs = data.0;
-        let ys = data.1;
+        let xs: Vec<f64> = data.0.iter().map(|item| {
+            let (mantissa, exponent, sign) = item.integer_decode();
+            (sign as f64) * (mantissa as f64) * (2f64.powf(exponent as f64))
+        }).collect();
+        let ys: Vec<f64> = data.1.iter().map(|item| {
+            let (mantissa, exponent, sign) = item.integer_decode();
+            (sign as f64) * (mantissa as f64) * (2f64.powf(exponent as f64))
+        }).collect();;
 
-        let xy = crate::stats::dot(xs, ys);
-        let x2 = crate::stats::dot(xs, xs);
+        let k = Langbardo::fit(&xs[..], &ys[..], 0.9);
 
-        Slope(xy / x2)
+        Slope(A::from(k.unwrap().0).unwrap())
     }
 
     /// Computes the goodness of fit (coefficient of determination) for this data set
