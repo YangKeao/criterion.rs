@@ -114,9 +114,9 @@ impl BenchmarkId {
         throughput: Option<Throughput>,
     ) -> BenchmarkId {
         let full_id = match (&function_id, &value_str) {
-            (&Some(ref func), &Some(ref val)) => format!("{}/{}/{}", group_id, func, val),
-            (&Some(ref func), &None) => format!("{}/{}", group_id, func),
-            (&None, &Some(ref val)) => format!("{}/{}", group_id, val),
+            (&Some(ref func), &Some(ref val)) => format!("{}/{}/{}", func, group_id, val),
+            (&Some(ref func), &None) => format!("{}/{}", func, group_id),
+            (&None, &Some(ref val)) => format!("{}/{}", val, group_id),
             (&None, &None) => group_id.clone(),
         };
 
