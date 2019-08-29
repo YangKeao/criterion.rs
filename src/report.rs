@@ -761,10 +761,12 @@ impl Report for MeanReport {
     }
 
     fn final_summary(&self, context: &ReportContext) {
+        let output_path = format!("{}/analysis.json", context.output_directory);
+        println!("OUTPUT TO: {}", &output_path);
         let mut file = OpenOptions::new()
             .read(true)
             .write(true)
-            .create(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
+            .create(true).open(&output_path).unwrap();
         let mut old_content = String::new();
         file.read_to_string(&mut old_content).unwrap();
         file.seek(SeekFrom::Start(0)).unwrap();
