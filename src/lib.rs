@@ -696,6 +696,7 @@ impl Default for Criterion {
                 sample_size: 100,
                 significance_level: 0.05,
                 warm_up_time: Duration::new(3, 0),
+                quantile: 0.2,
             },
             plotting,
             filter: None,
@@ -855,6 +856,19 @@ impl<M: Measurement> Criterion<M> {
         assert!(sl > 0.0 && sl < 1.0);
 
         self.config.significance_level = sl;
+        self
+    }
+
+    /// Changes the default quantile in quantile regression
+    /// for benchmarks run with this runner
+    ///
+    /// # Panics
+    ///
+    /// Panics if the quantile is set to a value outside the `(0, 1)` range
+    pub fn quantile(mut self, quantile: f64) -> Criterion<M> {
+        assert!(quantile > 0.0 && quantile < 1.0);
+
+        self.config.quantile = quantile;
         self
     }
 
@@ -1023,6 +1037,10 @@ impl<M: Measurement> Criterion<M> {
                 .long("significance-level")
                 .takes_value(true)
                 .help("Changes the default significance level for this run."))
+            .arg(Arg::with_name("quantile")
+                .long("quantile")
+                .takes_value(true)
+                .help("Changes the default quantile for this run."))
             .arg(Arg::with_name("test")
                 .hidden(true)
                 .long("test")
@@ -1185,6 +1203,17 @@ To test that the benchmarks work, run `cargo test --benches`
             assert!(num_significance_level > 0.0 && num_significance_level < 1.0);
 
             self.config.significance_level = num_significance_level;
+        }
+        if matches.is_present("quantile") {
+            let num_quantile = value_t!(matches.value_of("quantile"), f64)
+                .unwrap_or_else(|e| {
+                    println!("{}", e);
+                    std::process::exit(1)
+                });
+
+            assert!(num_quantile > 0.0 && num_quantile < 1.0);
+
+            self.config.quantile = num_quantile;
         }
 
         if matches.is_present("list") {

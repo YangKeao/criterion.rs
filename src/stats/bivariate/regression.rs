@@ -14,11 +14,10 @@ impl<A> Slope<A>
 where
     A: Float,
 {
-    /// Fits the data to a straight line that passes through the origin using ordinary least
-    /// squares
+    /// Fits the data to a straight line that passes through the origin using quantile regression
     ///
     /// - Time: `O(length)`
-    pub fn fit(data: &Data<A, A>) -> Slope<A> {
+    pub fn fit(data: &Data<A, A>, quantile: f64) -> Slope<A> {
         let xs: Vec<f64> = data.0.iter().map(|item| {
             let (mantissa, exponent, sign) = item.integer_decode();
             (sign as f64) * (mantissa as f64) * (2f64.powf(exponent as f64))
@@ -28,7 +27,7 @@ where
             (sign as f64) * (mantissa as f64) * (2f64.powf(exponent as f64))
         }).collect();;
 
-        let k = Langbardo::fit(&xs[..], &ys[..], 0.1);
+        let k = Langbardo::fit(&xs[..], &ys[..], quantile);
 
         Slope(A::from(k.unwrap().0).unwrap())
     }

@@ -28,7 +28,7 @@ fn regression_figure(
     let unit = formatter.scale_values(typical, &mut scaled_y);
     let scaled_y = Sample::new(&scaled_y);
 
-    let point_estimate = Slope::fit(&measurements.data).0;
+    let point_estimate = Slope::fit(&measurements.data, measurements.quantile).0;
     let mut scaled_points = [point_estimate * max_iters, lb * max_iters, ub * max_iters];
     let _ = formatter.scale_values(typical, &mut scaled_points);
     let [point, lb, ub] = scaled_points;

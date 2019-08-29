@@ -41,6 +41,7 @@ pub(crate) struct MeasurementData<'a> {
     pub distributions: Distributions,
     pub comparison: Option<ComparisonData>,
     pub throughput: Option<Throughput>,
+    pub quantile: f64,
 }
 impl<'a> MeasurementData<'a> {
     pub fn iter_counts(&self) -> &Sample<f64> {

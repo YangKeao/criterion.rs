@@ -195,6 +195,7 @@ pub(crate) fn common<M: Measurement, T>(
         distributions,
         comparison: compare_data,
         throughput,
+        quantile: config.quantile,
     };
 
     criterion.report.measurement_complete(
@@ -238,11 +239,11 @@ fn regression(data: &Data<f64, f64>, config: &BenchmarkConfig) -> (Distribution<
 
     let distribution = elapsed!(
         "Bootstrapped linear regression",
-        data.bootstrap(config.nresamples, |d| (Slope::fit(&d).0,))
+        data.bootstrap(config.nresamples, |d| (Slope::fit(&d, config.quantile).0,))
     )
     .0;
 
-    let point = Slope::fit(&data);
+    let point = Slope::fit(&data, config.quantile);
     let (lb, ub) = distribution.confidence_interval(config.confidence_level);
     let se = distribution.std_dev(None);
 

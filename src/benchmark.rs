@@ -18,6 +18,7 @@ pub struct BenchmarkConfig {
     pub nresamples: usize,
     pub sample_size: usize,
     pub significance_level: f64,
+    pub quantile: f64,
     pub warm_up_time: Duration,
 }
 
@@ -32,6 +33,7 @@ pub(crate) struct PartialBenchmarkConfig {
     pub(crate) significance_level: Option<f64>,
     pub(crate) warm_up_time: Option<Duration>,
     pub(crate) plot_config: PlotConfiguration,
+    pub(crate) quantile: Option<f64>,
 }
 
 impl Default for PartialBenchmarkConfig {
@@ -44,6 +46,7 @@ impl Default for PartialBenchmarkConfig {
             sample_size: None,
             significance_level: None,
             warm_up_time: None,
+            quantile: None,
             plot_config: PlotConfiguration::default(),
         }
     }
@@ -61,6 +64,7 @@ impl PartialBenchmarkConfig {
                 .significance_level
                 .unwrap_or(defaults.significance_level),
             warm_up_time: self.warm_up_time.unwrap_or(defaults.warm_up_time),
+            quantile: self.quantile.unwrap_or(defaults.quantile),
         }
     }
 }
