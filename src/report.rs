@@ -13,7 +13,7 @@ use std::cell::{Cell, RefCell};
 use std::cmp;
 use std::collections::{HashSet, HashMap};
 use std::fmt;
-use std::io::stdout;
+use std::io::{stdout, Read, SeekFrom, Seek};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::OpenOptions;
@@ -761,14 +761,19 @@ impl Report for MeanReport {
     }
 
     fn final_summary(&self, context: &ReportContext) {
-        let file = OpenOptions::new()
-            .read(true)
-            .create(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
-        let mut mean_map: HashMap<String, f64> = serde_json::from_reader(&file).unwrap();
-
         let mut file = OpenOptions::new()
+            .read(true)
             .write(true)
-            .truncate(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
+            .create(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
+        let mut old_content = String::new();
+        file.read_to_string(&mut old_content).unwrap();
+        file.seek(SeekFrom::Start(0)).unwrap();
+
+        let mut mean_map: HashMap<String, f64> = if old_content.len() > 0 {
+            serde_json::from_str(&old_content).unwrap()
+        } else {
+            HashMap::new()
+        };
 
         for (name, mean) in self.record.borrow().iter() {
             mean_map.insert(name.clone(), mean.clone());
