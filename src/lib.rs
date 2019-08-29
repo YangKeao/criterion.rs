@@ -106,7 +106,7 @@ use crate::html::Html;
 use crate::measurement::{Measurement, WallTime};
 use crate::plotting::Plotting;
 use crate::profiler::{ExternalProfiler, Profiler};
-use crate::report::{CliReport, Report, ReportContext, Reports};
+use crate::report::{CliReport, Report, ReportContext, Reports, MeanReport};
 use crate::routine::Function;
 
 pub use crate::benchmark::{Benchmark, BenchmarkDefinition, ParameterizedBenchmark};
@@ -681,6 +681,7 @@ impl Default for Criterion {
         let mut reports: Vec<Box<dyn Report>> = vec![];
         reports.push(Box::new(CliReport::new(false, false, false)));
         reports.push(Box::new(FileCsvReport));
+        reports.push(Box::new(MeanReport::default()));
 
         let output_directory =
             match std::env::vars().find(|&(ref key, _)| key == "CARGO_TARGET_DIR") {

@@ -9,13 +9,14 @@ use crate::stats::univariate::Sample;
 use crate::stats::Distribution;
 use crate::Estimate;
 use crate::{PlotConfiguration, Plotting, Throughput};
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::cmp;
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 use std::fmt;
 use std::io::stdout;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::fs::File;
 
 const MAX_DIRECTORY_NAME_LEN: usize = 64;
 const MAX_TITLE_LEN: usize = 100;
@@ -740,6 +741,34 @@ impl Report for CliReport {
                 format_short_estimate(&meas.absolute_estimates[&Statistic::MedianAbsDev]),
             );
         }
+    }
+}
+
+#[derive(Default)]
+pub(crate) struct MeanReport {
+    record: RefCell<Vec<(String, f64)>>
+}
+impl Report for MeanReport {
+    fn measurement_complete(
+        &self,
+        id: &BenchmarkId,
+        _context: &ReportContext,
+        measurements: &MeasurementData,
+        _formatter: &dyn ValueFormatter,
+    ) {
+        let mean = measurements.absolute_estimates.get(&Statistic::Slope).unwrap();
+        self.record.borrow_mut().push((id.id().to_owned(), mean.point_estimate));
+    }
+
+    fn final_summary(&self, _context: &ReportContext) {
+        let mut mean_map: HashMap<String, f64> = HashMap::new();
+        for (name, mean) in self.record.borrow().iter() {
+            mean_map.insert(name.clone(), mean.clone());
+        }
+        let json = serde_json::to_string(&mean_map).unwrap();
+
+        let mut file = File::create("analysis.json").unwrap();
+        file.write_all(json.as_bytes()).unwrap();
     }
 }
 
