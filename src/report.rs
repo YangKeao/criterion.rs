@@ -761,12 +761,14 @@ impl Report for MeanReport {
     }
 
     fn final_summary(&self, context: &ReportContext) {
-        let mut file = OpenOptions::new()
+        let file = OpenOptions::new()
             .read(true)
-            .write(true)
             .create(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
-
         let mut mean_map: HashMap<String, f64> = serde_json::from_reader(&file).unwrap();
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
 
         for (name, mean) in self.record.borrow().iter() {
             mean_map.insert(name.clone(), mean.clone());
