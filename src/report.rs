@@ -760,14 +760,14 @@ impl Report for MeanReport {
         self.record.borrow_mut().push((id.id().to_owned(), mean.point_estimate));
     }
 
-    fn final_summary(&self, _context: &ReportContext) {
+    fn final_summary(&self, context: &ReportContext) {
         let mut mean_map: HashMap<String, f64> = HashMap::new();
         for (name, mean) in self.record.borrow().iter() {
             mean_map.insert(name.clone(), mean.clone());
         }
         let json = serde_json::to_string(&mean_map).unwrap();
 
-        let mut file = File::create("analysis.json").unwrap();
+        let mut file = File::create(format!("{}/analysis.json", context.output_directory)).unwrap();
         file.write_all(json.as_bytes()).unwrap();
     }
 }
