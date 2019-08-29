@@ -1054,7 +1054,7 @@ impl<M: Measurement> Criterion<M> {
                 .help("Changes the default quantile for this run."))
             .arg(Arg::with_name("exact")
                 .long("exact")
-                .takes_value(true)
+                .takes_value(false)
                 .help("Change whether filter is required to be exact"))
             .arg(Arg::with_name("test")
                 .hidden(true)
@@ -1231,13 +1231,7 @@ To test that the benchmarks work, run `cargo test --benches`
             self.config.quantile = num_quantile;
         }
         if matches.is_present("exact") {
-            let exact = value_t!(matches.value_of("exact"), bool)
-                .unwrap_or_else(|e| {
-                    println!("{}", e);
-                    std::process::exit(1)
-                });
-
-            self.exact = exact;
+            self.exact = true;
         }
 
         if matches.is_present("list") {
