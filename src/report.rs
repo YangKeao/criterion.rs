@@ -16,7 +16,7 @@ use std::fmt;
 use std::io::stdout;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::fs::File;
+use std::fs::OpenOptions;
 
 const MAX_DIRECTORY_NAME_LEN: usize = 64;
 const MAX_TITLE_LEN: usize = 100;
@@ -761,13 +761,18 @@ impl Report for MeanReport {
     }
 
     fn final_summary(&self, context: &ReportContext) {
-        let mut mean_map: HashMap<String, f64> = HashMap::new();
+        let mut file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true).open(format!("{}/analysis.json", context.output_directory)).unwrap();
+
+        let mut mean_map: HashMap<String, f64> = serde_json::from_reader(&file).unwrap();
+
         for (name, mean) in self.record.borrow().iter() {
             mean_map.insert(name.clone(), mean.clone());
         }
         let json = serde_json::to_string(&mean_map).unwrap();
 
-        let mut file = File::create(format!("{}/analysis.json", context.output_directory)).unwrap();
         file.write_all(json.as_bytes()).unwrap();
     }
 }
