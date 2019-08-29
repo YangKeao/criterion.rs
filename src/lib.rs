@@ -655,6 +655,7 @@ pub struct Criterion<M: Measurement = WallTime> {
     profile_time: Option<Duration>,
     test_mode: bool,
     list_mode: bool,
+    exact: bool,
     all_directories: HashSet<String>,
     all_titles: HashSet<String>,
     measurement: M,
@@ -700,6 +701,7 @@ impl Default for Criterion {
             },
             plotting,
             filter: None,
+            exact: false,
             report: Box::new(Reports::new(reports)),
             baseline_directory: "base".to_owned(),
             baseline: Baseline::Save,
@@ -723,6 +725,7 @@ impl<M: Measurement> Criterion<M> {
             config: self.config,
             plotting: self.plotting,
             filter: self.filter,
+            exact: false,
             report: self.report,
             baseline_directory: self.baseline_directory,
             baseline: self.baseline,
@@ -869,6 +872,14 @@ impl<M: Measurement> Criterion<M> {
         assert!(quantile > 0.0 && quantile < 1.0);
 
         self.config.quantile = quantile;
+        self
+    }
+
+    /// Changes whether the filter is required to be exact
+    /// for benchmarks run with this runner
+    ///
+    pub fn exact(mut self, exact: bool) -> Criterion<M> {
+        self.exact = exact;
         self
     }
 
@@ -1041,6 +1052,10 @@ impl<M: Measurement> Criterion<M> {
                 .long("quantile")
                 .takes_value(true)
                 .help("Changes the default quantile for this run."))
+            .arg(Arg::with_name("exact")
+                .long("exact")
+                .takes_value(true)
+                .help("Change whether filter is required to be exact"))
             .arg(Arg::with_name("test")
                 .hidden(true)
                 .long("test")
@@ -1215,6 +1230,15 @@ To test that the benchmarks work, run `cargo test --benches`
 
             self.config.quantile = num_quantile;
         }
+        if matches.is_present("exact") {
+            let exact = value_t!(matches.value_of("exact"), bool)
+                .unwrap_or_else(|e| {
+                    println!("{}", e);
+                    std::process::exit(1)
+                });
+
+            self.exact = exact;
+        }
 
         if matches.is_present("list") {
             self.test_mode = true;
@@ -1232,7 +1256,13 @@ To test that the benchmarks work, run `cargo test --benches`
 
     fn filter_matches(&self, id: &str) -> bool {
         match self.filter {
-            Some(ref string) => id.contains(string),
+            Some(ref string) => {
+                if self.exact {
+                    id == string
+                } else {
+                    id.contains(string)
+                }
+            },
             None => true,
         }
     }
