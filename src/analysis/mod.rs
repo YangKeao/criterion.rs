@@ -44,7 +44,7 @@ pub(crate) fn common<M: Measurement, T>(
     throughput: Option<Throughput>,
 ) {
     if criterion.list_mode {
-        println!("{}: bench", id);
+        println!("{}", id);
         return;
     }
     criterion.report.benchmark_start(id, report_context);
