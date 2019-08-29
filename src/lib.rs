@@ -892,6 +892,7 @@ impl<M: Measurement> Criterion<M> {
                 let mut reports: Vec<Box<dyn Report>> = vec![];
                 reports.push(Box::new(CliReport::new(false, false, false)));
                 reports.push(Box::new(FileCsvReport));
+                reports.push(Box::new(MeanReport::default()));
                 reports.push(Box::new(Html::new()));
                 self.report = Box::new(Reports::new(reports));
                 Plotting::Enabled
@@ -1121,6 +1122,7 @@ To test that the benchmarks work, run `cargo test --benches`
             verbose,
         )));
         reports.push(Box::new(FileCsvReport));
+        reports.push(Box::new(MeanReport::default()));
 
         if matches.is_present("profile-time") {
             let num_seconds = value_t!(matches.value_of("profile-time"), u64).unwrap_or_else(|e| {
