@@ -757,7 +757,7 @@ impl Report for MeanReport {
         _formatter: &dyn ValueFormatter,
     ) {
         let mean = measurements.absolute_estimates.get(&Statistic::Slope).unwrap();
-        self.record.borrow_mut().push((id.id().to_owned(), mean.point_estimate));
+        self.record.borrow_mut().push((format!("{}", id), mean.point_estimate));
     }
 
     fn final_summary(&self, context: &ReportContext) {

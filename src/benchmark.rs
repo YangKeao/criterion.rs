@@ -320,7 +320,7 @@ impl<M: Measurement> BenchmarkDefinition<M> for Benchmark<M> {
             id.ensure_title_unique(&c.all_titles);
             c.all_titles.insert(id.as_title().to_owned());
 
-            if c.filter_matches(id.id()) {
+            if c.filter_matches(&id) {
                 any_matched = true;
                 analysis::common(
                     &id,
@@ -479,7 +479,7 @@ where
                 id.ensure_title_unique(&c.all_titles);
                 c.all_titles.insert(id.as_title().to_owned());
 
-                if c.filter_matches(id.id()) {
+                if c.filter_matches(&id) {
                     any_matched = true;
 
                     analysis::common(

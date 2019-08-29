@@ -1251,11 +1251,12 @@ To test that the benchmarks work, run `cargo test --benches`
         self
     }
 
-    fn filter_matches(&self, id: &str) -> bool {
+    fn filter_matches(&self, id: &report::BenchmarkId) -> bool {
+        let id = format!("{}", id);
         match self.filter {
             Some(ref string) => {
                 if self.exact {
-                    id == string
+                    &id == string
                 } else {
                     id.contains(string)
                 }

@@ -274,7 +274,7 @@ impl<'a, M: Measurement> BenchmarkGroup<'a, M> {
         id.ensure_title_unique(&self.criterion.all_titles);
         self.criterion.all_titles.insert(id.as_title().to_owned());
 
-        if self.criterion.filter_matches(id.id()) {
+        if self.criterion.filter_matches(&id) {
             self.any_matched = true;
 
             let mut func = Function::new(f);
