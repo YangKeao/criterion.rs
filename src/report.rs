@@ -769,6 +769,7 @@ impl Report for MeanReport {
             .create(true).open(&output_path).unwrap();
         let mut old_content = String::new();
         file.read_to_string(&mut old_content).unwrap();
+        file.set_len(0).unwrap();
         file.seek(SeekFrom::Start(0)).unwrap();
 
         let mut mean_map: HashMap<String, f64> = if old_content.len() > 0 {
