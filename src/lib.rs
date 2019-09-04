@@ -668,7 +668,7 @@ impl Default for Criterion {
     /// - Sample size: 100 measurements
     /// - Warm-up time: 3 s
     /// - Measurement time: 5 s
-    /// - Bootstrap size: 100 000 resamples
+    /// - Bootstrap size: 10 resamples
     /// - Noise threshold: 0.01 (1%)
     /// - Confidence level: 0.95
     /// - Significance level: 0.05
@@ -694,7 +694,7 @@ impl Default for Criterion {
                 confidence_level: 0.95,
                 measurement_time: Duration::new(5, 0),
                 noise_threshold: 0.01,
-                nresamples: 100_000,
+                nresamples: 10,
                 sample_size: 100,
                 significance_level: 0.05,
                 warm_up_time: Duration::new(3, 0),
